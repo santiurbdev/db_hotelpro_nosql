@@ -1,0 +1,84 @@
+db.reserva.find({ "numero_noches": { $gt: 3 } })
+
+db.reserva.aggregate([
+  {
+    "$lookup": {
+      "from": "cliente",
+      "localField": "id_cliente",
+      "foreignField": "id_cliente",
+      "as": "cliente_info"
+    }
+  },
+  { "$unwind": "$cliente_info" },
+  {
+    "$match": {
+      "estado_reserva": "confirmada",
+      "cliente_info.nacionalidad": "Colombiana"
+    }
+  }
+])
+
+
+db.consumo_servicio.find({
+  "servicio.nombre_servicio": { "$regex": "spa", "$options": "i" },
+  "precio_applied": { "$gt": 150000.00 }
+})
+
+
+db.reserva.find().toArray().filter(r => {
+  let tieneConsumo = db.consumo_servicio.findOne({ "id_habitacion": { $in: r.habitaciones_ids } });
+  return !tieneConsumo;
+})
+
+
+db.reserva.aggregate([
+  {
+    "$addFields": {
+      "valor_total": { "$add": ["$tarifa.tarifa_base", "$tarifa.impuestos"] }
+    }
+  },
+  { "$sort": { "valor_total": -1 } },
+  { "$limit": 5 },
+  {
+    "$lookup": {
+      "from": "cliente",
+      "localField": "id_cliente",
+      "foreignField": "id_cliente",
+      "as": "cliente_info"
+    }
+  },
+  { "$unwind": { "path": "$cliente_info", "preserveNullAndEmptyArrays": true } },
+  {
+    "$lookup": {
+      "from": "habitacion",
+      "localField": "habitaciones_ids",
+      "foreignField": "id_habitacion",
+      "as": "habitacion_info"
+    }
+  },
+  { "$unwind": { "path": "$habitacion_info", "preserveNullAndEmptyArrays": true } },
+  {
+    "$lookup": {
+      "from": "hotel",
+      "localField": "habitacion_info.id_hotel",
+      "foreignField": "id_hotel",
+      "as": "hotel_info"
+    }
+  },
+  { "$unwind": { "path": "$hotel_info", "preserveNullAndEmptyArrays": true } },
+  {
+    "$project": {
+      "_id": 0,
+      "huesped": "$cliente_info.nombre",
+      "hotel": {
+        "$ifNull": [
+          "$hotel_info.nombre",
+          "$hotel_info.nombre_hotel",
+          "$habitacion_info.hotel.nombre",
+          "$habitacion_info.hotel.nombre_hotel"
+        ]
+      },
+      "valor": "$valor_total"
+    }
+  }
+])
