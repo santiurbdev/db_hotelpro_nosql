@@ -27,6 +27,11 @@
 ├── db_hotelpro/                  # JSON backup of all 9 database collections
 ├── 5 consultas - desempeño.txt   # MongoDB queries and aggregation pipelines
 └── README.md                     # Project documentation
+```
+### 🇺🇸 Author 👤
+* *Name:* Santiago Uribe Restrepo
+* *Role:* Backend Software Student & Developer
+* *GitHub:* [@santiurbdev](https://github.com/santiurbdev)
 
 
 # 🏨 HotelPro NoSQL Database | MongoDB
@@ -58,3 +63,8 @@
 ├── db_hotelpro/                  # JSON backup of all 9 database collections
 ├── 5 consultas - desempeño.txt   # MongoDB queries and aggregation pipelines
 └── README.md                     # Project documentation
+```
+### 🇪🇸 Autor 👤
+* *Nombre:* Santiago Uribe Restrepo
+* *Rol:* Estudiante y Desarrollador de Software Backend
+* *GitHub:* [@santiurbdev](https://github.com/santiurbdev)
